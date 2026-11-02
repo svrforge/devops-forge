@@ -92,3 +92,32 @@ jobs:
           severity: HIGH,CRITICAL
           ignore-unfixed: true
           exit-code: "1"
+
+  jenkins-agent-image:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    env:
+      JENKINS_SECRET: ci-only-not-a-real-secret
+    defaults:
+      run:
+        working-directory: jenkins-local
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: hadolint/hadolint-action@06be81baf89a55ffd0e24b8f04a4185738dd3387 # v3.5.0
+        with:
+          dockerfile: jenkins-local/Dockerfile
+      - name: Validate the Compose file
+        run: docker compose config --quiet
+      - name: Build the agent image
+        run: docker compose build agent
+      - name: Check the tools the pipeline needs
+        run: |
+          docker compose run --rm --no-deps --entrypoint sh agent -c \
+            'id && git --version && python3 --version && trivy --version && docker --version && docker compose version && docker buildx version'
+      - name: Reach the private Docker daemon over TLS
+        run: docker compose run --rm --entrypoint docker agent info --format 'daemon {{.ServerVersion}}'
+      - name: Stop the test containers
+        if: always()
+        run: docker compose down --volumes
