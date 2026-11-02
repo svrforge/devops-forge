@@ -12,4 +12,4 @@ First stable release.
 - `--ignore`, `--exclude` and an inline `pipeline-doctor:ignore` comment for accepted findings
 - A GitHub Action, `svrforge/devops-forge@v1.0.0`
 - A skill for Claude Code and Codex
-- A sample audit report
+- A [sample audit report](docs/sample-audit-report.pdf)
