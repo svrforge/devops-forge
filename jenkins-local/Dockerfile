@@ -1,7 +1,7 @@
 # A Jenkins agent with everything the project pipeline needs.
 FROM jenkins/inbound-agent:3391.va_37fa_a_305d6d-5-jdk21
 
-USER root
+USER 0
 
 # hadolint ignore=DL3008,SC1091
 RUN apt-get update \
@@ -31,4 +31,5 @@ RUN set -e; \
     tar -xzf /tmp/trivy.tgz -C /usr/local/bin trivy; \
     rm /tmp/trivy.tgz /tmp/trivy.sha256
 
-USER jenkins
+# The jenkins user in the base image.
+USER 1000
