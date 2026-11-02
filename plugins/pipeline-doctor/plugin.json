@@ -1,7 +1,7 @@
 {
   "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
   "name": "pipeline-doctor",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "description": "Offline security and reliability audit for Jenkins pipelines, with a concrete fix for every finding.",
   "author": {
     "name": "Vignesh Raja Sundararajan",

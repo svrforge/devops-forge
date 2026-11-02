@@ -2,7 +2,7 @@
   "name": "pipeline-doctor",
   "displayName": "Pipeline Doctor",
   "description": "Offline security and reliability audit for Jenkins pipelines, with a concrete fix for every finding.",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "author": {
     "name": "Vignesh Raja Sundararajan",
     "url": "https://github.com/svrforge"

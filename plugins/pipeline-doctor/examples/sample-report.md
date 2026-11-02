@@ -1,6 +1,6 @@
 # Pipeline audit report
 
-Scanned **1** file(s) with pipeline-doctor 0.1.0. This report comes from a deliberately insecure test pipeline.
+Scanned **1** file(s) with pipeline-doctor 1.0.0. This report comes from a deliberately insecure test pipeline.
 
 | Severity | Findings |
 | --- | --- |
