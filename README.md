@@ -5,6 +5,7 @@
 <br />
 
 [![CI](https://github.com/svrforge/devops-forge/actions/workflows/ci.yml/badge.svg)](https://github.com/svrforge/devops-forge/actions/workflows/ci.yml)
+[![Release](https://img.shields.io/github/v/release/svrforge/devops-forge?color=0F827B)](https://github.com/svrforge/devops-forge/releases/latest)
 [![License: MIT](https://img.shields.io/badge/License-MIT-0F827B.svg)](LICENSE)
 ![Python 3.8+](https://img.shields.io/badge/Python-3.8%2B-101A30.svg)
 ![Dependencies: none](https://img.shields.io/badge/Dependencies-none-101A30.svg)
@@ -109,11 +110,13 @@ The exit code is 1 when a finding is at or above `--fail-on`, so one command can
 **GitHub Actions**
 
 ```yaml
-- name: Audit Jenkins pipelines
-  run: |
-    curl -fsSLO https://raw.githubusercontent.com/svrforge/devops-forge/main/plugins/pipeline-doctor/skills/audit/scripts/pipeline_doctor.py
-    python3 pipeline_doctor.py . --fail-on high
+- uses: actions/checkout@v7
+- uses: svrforge/devops-forge@v1
+  with:
+    fail-on: high
 ```
+
+The action also accepts `path`, `format`, `output` and `ignore`.
 
 **Jenkins**
 
@@ -125,7 +128,7 @@ stage('Audit pipelines') {
 }
 ```
 
-For production CI, keep a reviewed copy of the script in your repository or pin the URL to a commit.
+For production CI, pin the action to a commit and keep a reviewed copy of the script in your repository for Jenkins.
 
 To accept a finding on purpose, add a comment on the same line or the line above:
 
@@ -161,13 +164,24 @@ Then ask: *"Audit the Jenkins pipelines in this repository."*
 
 ## Professional audit
 
-Need a deeper review? I offer a fixed-scope Jenkins audit for teams:
+The scanner finds known patterns. I also read your pipelines by hand and find what it cannot see, such as a release that can still ship after a failed test.
 
-- Manual review of your pipelines and shared libraries, beyond what a scanner can see
-- A prioritised report written for both engineers and managers
-- Exact fixes, delivered as pull requests
+| | Quick Check | Pipeline Audit | Audit + Fixes |
+| :--- | :--- | :--- | :--- |
+| **Price** | **$149** | **$499** | **$999** |
+| Pipelines | Up to 3 | Up to 10 | Up to 10 |
+| Delivery | 2 business days | 5 business days | 10 business days |
+| Scanner and manual review | Yes | Yes | Yes |
+| Prioritised findings with exact fixes | Yes | Yes | Yes |
+| Report for engineers and managers | | Yes | Yes |
+| 30-minute walkthrough | | Yes | Yes |
+| Pull requests for critical and high findings | | | Yes |
 
-**[Request an audit](https://github.com/svrforge/devops-forge/issues/new?template=audit-request.yml)**
+**Founding offer:** the first 3 Pipeline Audits are $299 in exchange for an honest written testimonial.
+
+**[See a sample report (PDF)](docs/sample-audit-report.pdf)** &nbsp;·&nbsp; **[Email kavin41251@gmail.com](mailto:kavin41251@gmail.com?subject=Jenkins%20pipeline%20audit)**
+
+More than 10 pipelines, or a team in India? Email me for a quote. Please do not send secrets or pipeline code in your first message.
 
 ## About
 

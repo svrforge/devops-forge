@@ -7,6 +7,8 @@ body:
     attributes:
       value: |
         Issues are public. Do not paste pipeline code, secrets, internal URLs or anything confidential here.
+
+        To keep your request private, email kavin41251@gmail.com instead.
   - type: input
     id: team
     attributes:
