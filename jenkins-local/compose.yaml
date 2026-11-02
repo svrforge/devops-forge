@@ -5,6 +5,7 @@ services:
   dind:
     image: docker:29-dind
     privileged: true
+    restart: unless-stopped
     environment:
       DOCKER_TLS_CERTDIR: /certs
     networks:
