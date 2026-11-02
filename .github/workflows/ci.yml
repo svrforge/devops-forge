@@ -1,0 +1,94 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+# The default token can read the repository and do nothing else.
+permissions:
+  contents: read
+
+# Third-party actions are pinned to full commit SHAs because tags can be moved.
+# See basics/07-cicd.md for a real attack this prevents.
+jobs:
+  pipeline-doctor:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7.1.0
+        with:
+          python-version: "3.13"
+      - name: Unit tests
+        working-directory: plugins/pipeline-doctor
+        run: python -m unittest discover -s tests
+      - name: Audit this repository's own pipelines
+        run: python plugins/pipeline-doctor/skills/audit/scripts/pipeline_doctor.py projects --fail-on medium
+
+  url-shortener-test:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_DB: shortener
+          POSTGRES_USER: shortener
+          POSTGRES_PASSWORD: ci-only-not-a-real-secret
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U shortener -d shortener"
+          --health-interval 3s
+          --health-timeout 3s
+          --health-retries 20
+    env:
+      DATABASE_URL: postgresql://shortener:ci-only-not-a-real-secret@127.0.0.1:5432/shortener
+    defaults:
+      run:
+        working-directory: projects/01-url-shortener
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7.1.0
+        with:
+          python-version: "3.13"
+      - name: Install dependencies
+        run: pip install -r requirements.txt -r requirements-dev.txt
+      - name: Run tests against real PostgreSQL
+        run: python -m pytest -q
+
+  url-shortener-delivery:
+    needs: url-shortener-test
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    defaults:
+      run:
+        working-directory: projects/01-url-shortener
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: hadolint/hadolint-action@06be81baf89a55ffd0e24b8f04a4185738dd3387 # v3.5.0
+        with:
+          dockerfile: projects/01-url-shortener/Dockerfile
+      - name: Validate Kubernetes manifests
+        run: |
+          curl -fsSL -o kubeconform.tar.gz https://github.com/yannh/kubeconform/releases/download/v0.6.7/kubeconform-linux-amd64.tar.gz
+          echo "95f14e87aa28c09d5941f11bd024c1d02fdc0303ccaa23f61cef67bc92619d73  kubeconform.tar.gz" | sha256sum --check
+          tar -xzf kubeconform.tar.gz kubeconform
+          ./kubeconform -summary -strict -kubernetes-version 1.31.0 -ignore-filename-pattern kustomization k8s
+      - name: Build the runtime image
+        run: docker build --target runtime --tag "url-shortener:${GITHUB_SHA}" .
+      - name: Scan the image
+        uses: aquasecurity/trivy-action@ed142fd0673e97e23eac54620cfb913e5ce36c25 # v0.36.0
+        with:
+          image-ref: url-shortener:${{ github.sha }}
+          version: v0.76.1
+          severity: HIGH,CRITICAL
+          ignore-unfixed: true
+          exit-code: "1"

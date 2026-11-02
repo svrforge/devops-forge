@@ -1,0 +1,31 @@
+{
+  "name": "pipeline-doctor",
+  "version": "0.1.0",
+  "description": "Offline security and reliability audit for Jenkins pipelines, with a concrete fix for every finding.",
+  "author": {
+    "name": "Vignesh Raja Sundararajan",
+    "url": "https://github.com/svrforge"
+  },
+  "license": "MIT",
+  "keywords": [
+    "jenkins",
+    "ci-cd",
+    "devops",
+    "security",
+    "audit"
+  ],
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "Pipeline Doctor",
+    "shortDescription": "Audit Jenkins pipelines offline",
+    "category": "Coding",
+    "capabilities": [
+      "Read"
+    ],
+    "defaultPrompt": [
+      "Audit the Jenkins pipelines in this repository"
+    ]
+  },
+  "homepage": "https://github.com/svrforge/devops-forge/tree/main/plugins/pipeline-doctor",
+  "repository": "https://github.com/svrforge/devops-forge"
+}

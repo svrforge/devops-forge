@@ -1,0 +1,15 @@
+{
+  "name": "devops-forge",
+  "description": "DevOps tools from the devops-forge repository",
+  "owner": {
+    "name": "SVR Forge",
+    "url": "https://github.com/svrforge"
+  },
+  "plugins": [
+    {
+      "name": "pipeline-doctor",
+      "source": "./plugins/pipeline-doctor",
+      "description": "Offline security and reliability audit for Jenkins pipelines."
+    }
+  ]
+}

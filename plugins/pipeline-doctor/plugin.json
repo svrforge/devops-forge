@@ -1,0 +1,20 @@
+{
+  "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
+  "name": "pipeline-doctor",
+  "version": "0.1.0",
+  "description": "Offline security and reliability audit for Jenkins pipelines, with a concrete fix for every finding.",
+  "author": {
+    "name": "Vignesh Raja Sundararajan",
+    "url": "https://github.com/svrforge"
+  },
+  "license": "MIT",
+  "keywords": [
+    "jenkins",
+    "ci-cd",
+    "devops",
+    "security",
+    "audit"
+  ],
+  "homepage": "https://github.com/svrforge/devops-forge/tree/main/plugins/pipeline-doctor",
+  "repository": "https://github.com/svrforge/devops-forge"
+}

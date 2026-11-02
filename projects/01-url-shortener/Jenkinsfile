@@ -1,0 +1,47 @@
+// Builds, tests and scans the URL shortener.
+// It needs an agent labelled 'docker'. See jenkins-local/ for one that works with a containerised Jenkins.
+pipeline {
+    agent { label 'docker' }
+    options {
+        timeout(time: 20, unit: 'MINUTES')
+        buildDiscarder(logRotator(numToKeepStr: '30'))
+        disableConcurrentBuilds()
+    }
+    environment {
+        IMAGE = "url-shortener:${env.BUILD_NUMBER}"
+        POSTGRES_PASSWORD = 'ci-only-not-a-real-secret'
+    }
+    stages {
+        stage('Audit this pipeline') {
+            steps {
+                sh 'python3 plugins/pipeline-doctor/skills/audit/scripts/pipeline_doctor.py projects/01-url-shortener/Jenkinsfile --fail-on medium'
+            }
+        }
+        stage('Test') {
+            steps {
+                dir('projects/01-url-shortener') {
+                    sh 'docker compose --profile test run --rm --build test'
+                }
+            }
+            post {
+                always {
+                    dir('projects/01-url-shortener') {
+                        sh 'docker compose --profile test down --volumes'
+                    }
+                }
+            }
+        }
+        stage('Build image') {
+            steps {
+                dir('projects/01-url-shortener') {
+                    sh 'docker build --target runtime --tag "$IMAGE" .'
+                }
+            }
+        }
+        stage('Scan image') {
+            steps {
+                sh 'trivy image --exit-code 1 --severity HIGH,CRITICAL --ignore-unfixed "$IMAGE"'
+            }
+        }
+    }
+}
