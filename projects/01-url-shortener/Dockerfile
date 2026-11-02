@@ -2,7 +2,8 @@
 FROM python:3.13-slim AS build
 WORKDIR /build
 COPY requirements.txt .
-RUN python -m venv /opt/venv && /opt/venv/bin/pip install --no-cache-dir -r requirements.txt
+RUN python -m venv --without-pip /opt/venv \
+    && pip --python /opt/venv/bin/python install --no-cache-dir -r requirements.txt
 
 # Stage 2: test image. Build it with --target test. The final image never contains it.
 FROM python:3.13-slim AS test
@@ -10,7 +11,7 @@ ENV PATH=/opt/venv/bin:$PATH
 WORKDIR /app
 COPY --from=build /opt/venv /opt/venv
 COPY requirements-dev.txt .
-RUN pip install --no-cache-dir -r requirements-dev.txt
+RUN pip --python /opt/venv/bin/python install --no-cache-dir -r requirements-dev.txt
 COPY shortener ./shortener
 COPY tests ./tests
 CMD ["python", "-m", "pytest", "-q"]
@@ -18,7 +19,9 @@ CMD ["python", "-m", "pytest", "-q"]
 # Stage 3: the image that ships. It is the default target because it comes last.
 FROM python:3.13-slim AS runtime
 ENV PATH=/opt/venv/bin:$PATH PYTHONDONTWRITEBYTECODE=1 PYTHONUNBUFFERED=1
-RUN useradd --system --uid 10001 --no-create-home app
+# The app never installs packages, so remove pip and the libraries bundled inside it.
+RUN /usr/local/bin/python -m pip uninstall --yes pip \
+    && useradd --system --uid 10001 --no-create-home app
 WORKDIR /app
 COPY --from=build /opt/venv /opt/venv
 COPY shortener ./shortener
