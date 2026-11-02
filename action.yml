@@ -1,0 +1,61 @@
+name: Pipeline Doctor Jenkins Audit
+description: Audit Jenkins pipelines for security and reliability mistakes, fully offline.
+author: Vignesh Raja Sundararajan
+branding:
+  icon: shield
+  color: green
+
+inputs:
+  path:
+    description: File or directory to scan.
+    required: false
+    default: "."
+  fail-on:
+    description: Fail at or above this severity. Use critical, high, medium, low or none.
+    required: false
+    default: high
+  format:
+    description: Report format. Use text, json, markdown or sarif.
+    required: false
+    default: text
+  output:
+    description: Write the report to this file instead of the log.
+    required: false
+    default: ""
+  ignore:
+    description: Comma-separated rule IDs to skip, such as PD009,PD017.
+    required: false
+    default: ""
+
+runs:
+  using: composite
+  steps:
+    - name: Run Pipeline Doctor
+      shell: bash
+      env:
+        PD_PATH: ${{ inputs.path }}
+        PD_FAIL_ON: ${{ inputs.fail-on }}
+        PD_FORMAT: ${{ inputs.format }}
+        PD_OUTPUT: ${{ inputs.output }}
+        PD_IGNORE: ${{ inputs.ignore }}
+      run: |
+        for candidate in python3 python; do
+          if "$candidate" --version >/dev/null 2>&1; then
+            PYTHON="$candidate"
+            break
+          fi
+        done
+        if [ -z "${PYTHON:-}" ]; then
+          echo "::error::Pipeline Doctor needs Python 3.8 or later on the runner."
+          exit 1
+        fi
+
+        args=(--format "$PD_FORMAT" --fail-on "$PD_FAIL_ON")
+        if [ -n "$PD_OUTPUT" ]; then
+          args+=(--output "$PD_OUTPUT")
+        fi
+        if [ -n "$PD_IGNORE" ]; then
+          args+=(--ignore "$PD_IGNORE")
+        fi
+
+        "$PYTHON" "$GITHUB_ACTION_PATH/plugins/pipeline-doctor/skills/audit/scripts/pipeline_doctor.py" "${args[@]}" -- "$PD_PATH"

@@ -36,3 +36,35 @@ jobs:
         run: python -m unittest discover -s tests
       - name: Audit this repository's pipeline
         run: python plugins/pipeline-doctor/skills/audit/scripts/pipeline_doctor.py Jenkinsfile --fail-on low
+
+  action:
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 5
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-24.04, windows-2025]
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: A clean pipeline passes
+        uses: ./
+        with:
+          path: Jenkinsfile
+          fail-on: low
+      - name: An insecure pipeline fails
+        id: insecure
+        continue-on-error: true
+        uses: ./
+        with:
+          path: plugins/pipeline-doctor/tests/fixtures/insecure.Jenkinsfile
+          format: markdown
+          output: report.md
+      - name: Check the failure and the report
+        shell: bash
+        env:
+          OUTCOME: ${{ steps.insecure.outcome }}
+        run: |
+          test "$OUTCOME" = failure
+          grep -q PD001 report.md
