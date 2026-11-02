@@ -111,7 +111,7 @@ The exit code is 1 when a finding is at or above `--fail-on`, so one command can
 
 ```yaml
 - uses: actions/checkout@v7
-- uses: svrforge/devops-forge@v1
+- uses: svrforge/devops-forge@v1.0.0
   with:
     fail-on: high
 ```
