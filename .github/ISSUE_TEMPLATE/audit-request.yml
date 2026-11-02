@@ -1,0 +1,40 @@
+name: Request a pipeline audit
+description: Ask for a professional review of your Jenkins pipelines.
+title: "Audit request: "
+labels: ["audit request"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Issues are public. Do not paste pipeline code, secrets, internal URLs or anything confidential here.
+  - type: input
+    id: team
+    attributes:
+      label: Team or company
+    validations:
+      required: true
+  - type: dropdown
+    id: size
+    attributes:
+      label: How many Jenkins pipelines do you run?
+      options:
+        - 1 to 10
+        - 11 to 50
+        - 51 to 200
+        - More than 200
+    validations:
+      required: true
+  - type: textarea
+    id: goal
+    attributes:
+      label: What would you like to improve?
+      placeholder: For example, secret handling, slow builds or unreliable deployments.
+    validations:
+      required: true
+  - type: input
+    id: contact
+    attributes:
+      label: How should I reach you?
+      description: This field is public, so use a work address or profile link you are happy to share.
+    validations:
+      required: true

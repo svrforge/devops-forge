@@ -1,6 +1,0 @@
-**
-!requirements.txt
-!requirements-dev.txt
-!shortener/**
-!tests/**
-**/__pycache__

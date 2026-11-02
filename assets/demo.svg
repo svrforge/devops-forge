@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1120" height="520" viewBox="0 0 1120 520" role="img" aria-labelledby="title desc">
+  <title id="title">Pipeline Doctor terminal output</title>
+  <desc id="desc">Pipeline Doctor reports a hardcoded secret, a secret passed through Groovy interpolation and a remote script piped into a shell, each with its line number and fix.</desc>
+  <rect width="1120" height="520" rx="16" fill="#0A111D"/>
+  <rect x="0.5" y="0.5" width="1119" height="519" rx="16" fill="none" stroke="#2A3B52"/>
+  <circle cx="30" cy="28" r="6.5" fill="#FF6B6B"/>
+  <circle cx="53" cy="28" r="6.5" fill="#FFC857"/>
+  <circle cx="76" cy="28" r="6.5" fill="#5DE2B3"/>
+  <path d="M0 56H1120" stroke="#2A3B52"/>
+  <g font-family="Consolas, Menlo, 'DejaVu Sans Mono', 'Courier New', monospace" font-size="17.5" style="white-space:pre">
+    <text x="30" y="94"><tspan fill="#5DE2D9">$</tspan><tspan fill="#E9EFF6"> python3 pipeline_doctor.py Jenkinsfile</tspan></text>
+
+    <text x="30" y="142"><tspan fill="#E9EFF6">Jenkinsfile:12  </tspan><tspan fill="#FF6B6B" font-weight="700">CRITICAL</tspan><tspan fill="#E9EFF6">  PD001  Hardcoded secret</tspan></text>
+    <text x="30" y="168" fill="#8FA3B8">    &gt; API_PASSWORD = [value redacted]</text>
+    <text x="30" y="194" fill="#5DE2B3">    Fix: Rotate the secret first, then store it in the Jenkins credentials store.</text>
+
+    <text x="30" y="242"><tspan fill="#E9EFF6">Jenkinsfile:22  </tspan><tspan fill="#FF9F5A" font-weight="700">HIGH</tspan><tspan fill="#E9EFF6">  PD002  Secret interpolated into a shell step by Groovy</tspan></text>
+    <text x="30" y="268" fill="#8FA3B8">    &gt; sh "docker login -u ${REGISTRY_CREDS_USR} -p ${REGISTRY_CREDS_PSW} registry.example.com"</text>
+    <text x="30" y="294" fill="#5DE2B3">    Fix: Use single quotes so the shell expands the variable.</text>
+
+    <text x="30" y="342"><tspan fill="#E9EFF6">Jenkinsfile:25  </tspan><tspan fill="#FF9F5A" font-weight="700">HIGH</tspan><tspan fill="#E9EFF6">  PD003  Remote script piped into a shell</tspan></text>
+    <text x="30" y="368" fill="#8FA3B8">    &gt; sh 'curl -fsSL https://get.example.com/install.sh | sudo bash'</text>
+    <text x="30" y="394" fill="#5DE2B3">    Fix: Download to a file, verify a pinned checksum, then run it.</text>
+
+    <text x="30" y="442" fill="#6E8299">    ...</text>
+    <text x="30" y="482"><tspan fill="#E9EFF6">Scanned 1 file(s): </tspan><tspan fill="#FF6B6B" font-weight="700">1 critical</tspan><tspan fill="#E9EFF6">, </tspan><tspan fill="#FF9F5A" font-weight="700">6 high</tspan><tspan fill="#E9EFF6">, </tspan><tspan fill="#FFC857" font-weight="700">14 medium</tspan><tspan fill="#E9EFF6">, </tspan><tspan fill="#5DE2D9" font-weight="700">4 low</tspan></text>
+  </g>
+</svg>

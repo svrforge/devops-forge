@@ -1,0 +1,66 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="420" viewBox="0 0 1280 420" role="img" aria-labelledby="title desc">
+  <title id="title">Pipeline Doctor by SVR Forge</title>
+  <desc id="desc">Offline security and reliability audit for Jenkins pipelines. 19 rules, no dependencies, no Jenkins server needed.</desc>
+  <defs>
+    <linearGradient id="background" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#060A12"/>
+      <stop offset="0.55" stop-color="#101A2C"/>
+      <stop offset="1" stop-color="#0B1320"/>
+    </linearGradient>
+    <linearGradient id="mint" x1="0" y1="0" x2="1" y2="0.6">
+      <stop offset="0" stop-color="#9FFDE1"/>
+      <stop offset="0.57" stop-color="#5DE2D9"/>
+      <stop offset="1" stop-color="#A89AFF"/>
+    </linearGradient>
+    <linearGradient id="beam" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#70EFD8" stop-opacity="0.9"/>
+      <stop offset="1" stop-color="#A89AFF" stop-opacity="0.15"/>
+    </linearGradient>
+    <radialGradient id="aura">
+      <stop offset="0" stop-color="#64C5C9" stop-opacity="0.22"/>
+      <stop offset="1" stop-color="#3B65AB" stop-opacity="0"/>
+    </radialGradient>
+    <pattern id="grid" width="70" height="70" patternUnits="userSpaceOnUse">
+      <path d="M70 0H0V70" fill="none" stroke="#C2DEF0" stroke-opacity="0.055"/>
+    </pattern>
+  </defs>
+
+  <rect width="1280" height="420" rx="22" fill="url(#background)"/>
+  <rect width="1280" height="420" rx="22" fill="url(#grid)"/>
+  <circle cx="1010" cy="205" r="340" fill="url(#aura)"/>
+
+  <g font-family="'Segoe UI', 'Helvetica Neue', Helvetica, Arial, sans-serif">
+    <text x="72" y="92" fill="#70EFD8" font-size="19" font-weight="600" letter-spacing="4.5">SVR FORGE</text>
+    <text x="70" y="178" fill="url(#mint)" font-size="74" font-weight="700" letter-spacing="-1.5">Pipeline Doctor</text>
+    <rect x="72" y="204" width="132" height="4" rx="2" fill="url(#beam)"/>
+    <text x="72" y="254" fill="#DCE7F3" font-size="27" font-weight="400">Find the Jenkins mistakes that leak secrets,</text>
+    <text x="72" y="291" fill="#DCE7F3" font-size="27" font-weight="400">stall builds and break releases.</text>
+    <text x="72" y="350" font-size="17" font-weight="600" fill="#9DB2C8" letter-spacing="0.3">19 RULES<tspan dx="20" fill="#3E5068">/</tspan><tspan dx="20">NO DEPENDENCIES</tspan><tspan dx="20" fill="#3E5068">/</tspan><tspan dx="20">FULLY OFFLINE</tspan></text>
+  </g>
+
+  <g transform="translate(794 74)">
+    <rect width="414" height="272" rx="16" fill="#0A111D" stroke="#2A3B52"/>
+    <circle cx="28" cy="27" r="6" fill="#FF6B6B"/>
+    <circle cx="50" cy="27" r="6" fill="#FFC857"/>
+    <circle cx="72" cy="27" r="6" fill="#5DE2B3"/>
+    <text x="207" y="32" text-anchor="middle" fill="#6E8299" font-family="Consolas, Menlo, 'DejaVu Sans Mono', monospace" font-size="14">audit report</text>
+    <path d="M0 52H414" stroke="#2A3B52"/>
+    <g font-family="'Segoe UI', 'Helvetica Neue', Helvetica, Arial, sans-serif" font-size="18" font-weight="600">
+      <circle cx="34" cy="90" r="7" fill="#FF6B6B"/>
+      <text x="56" y="96" fill="#E9EFF6">Hardcoded secret</text>
+      <text x="386" y="96" text-anchor="end" fill="#FF6B6B" font-size="14" letter-spacing="1">CRITICAL</text>
+
+      <circle cx="34" cy="136" r="7" fill="#FF9F5A"/>
+      <text x="56" y="142" fill="#E9EFF6">Secret leaked to the shell</text>
+      <text x="386" y="142" text-anchor="end" fill="#FF9F5A" font-size="14" letter-spacing="1">HIGH</text>
+
+      <circle cx="34" cy="182" r="7" fill="#FFC857"/>
+      <text x="56" y="188" fill="#E9EFF6">Pipeline has no timeout</text>
+      <text x="386" y="188" text-anchor="end" fill="#FFC857" font-size="14" letter-spacing="1">MEDIUM</text>
+
+      <circle cx="34" cy="228" r="7" fill="#5DE2D9"/>
+      <text x="56" y="234" fill="#E9EFF6">Exact fix for every finding</text>
+      <path d="M368 228l7 7 13-14" fill="none" stroke="#5DE2D9" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"/>
+    </g>
+  </g>
+</svg>
