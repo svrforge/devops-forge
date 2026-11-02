@@ -7,6 +7,10 @@ services:
     privileged: true
     environment:
       DOCKER_TLS_CERTDIR: /certs
+    networks:
+      default:
+        aliases:
+          - docker # The daemon's TLS certificate is issued for this name.
     volumes:
       - docker-certs-client:/certs/client
       - docker-data:/var/lib/docker
@@ -25,7 +29,7 @@ services:
       JENKINS_SECRET: ${JENKINS_SECRET:?copy the secret from the agent page into .env}
       JENKINS_AGENT_NAME: ${JENKINS_AGENT_NAME:-docker-agent}
       JENKINS_WEB_SOCKET: "true"
-      DOCKER_HOST: tcp://dind:2376
+      DOCKER_HOST: tcp://docker:2376
       DOCKER_CERT_PATH: /certs/client
       DOCKER_TLS_VERIFY: "1"
     extra_hosts:

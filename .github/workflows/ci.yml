@@ -118,6 +118,8 @@ jobs:
             'id && git --version && python3 --version && trivy --version && docker --version && docker compose version && docker buildx version'
       - name: Reach the private Docker daemon over TLS
         run: docker compose run --rm --entrypoint docker agent info --format 'daemon {{.ServerVersion}}'
+      - name: Run a container through the private daemon
+        run: docker compose run --rm --entrypoint docker agent run --rm hello-world
       - name: Stop the test containers
         if: always()
         run: docker compose down --volumes
