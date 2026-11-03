@@ -796,7 +796,7 @@ def is_pipeline_file(path: Path, root: Path) -> bool:
     parts = path.relative_to(root).parts[:-1]
     if PIPELINE_DIRS.intersection(parts):
         return True
-    return bool(parts) and parts[0] == "src" and (root / "vars").is_dir()
+    return any(part == "src" and root.joinpath(*parts[:i], "vars").is_dir() for i, part in enumerate(parts))
 
 
 def discover(targets: Sequence[str], exclude: Sequence[str]) -> Iterator[Tuple[Path, str]]:
