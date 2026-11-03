@@ -243,6 +243,17 @@ class Cli(unittest.TestCase):
         self.assertEqual(data["version"], "2.1.0")
         self.assertTrue(data["runs"][0]["results"])
 
+    def test_discovery_finds_a_library_in_a_subfolder(self):
+        with tempfile.TemporaryDirectory() as folder:
+            root = Path(folder)
+            (root / "library" / "vars").mkdir(parents=True)
+            (root / "library" / "src" / "org").mkdir(parents=True)
+            (root / "tools" / "src").mkdir(parents=True)
+            (root / "library" / "src" / "org" / "Helper.groovy").write_text("class Helper {}", encoding="utf-8")
+            (root / "tools" / "src" / "Other.groovy").write_text("class Other {}", encoding="utf-8")
+            found = {path.name for path, _ in pd.discover([folder], [])}
+            self.assertEqual(found, {"Helper.groovy"})
+
     def test_discovery_finds_pipelines_and_skips_noise(self):
         with tempfile.TemporaryDirectory() as folder:
             root = Path(folder)
