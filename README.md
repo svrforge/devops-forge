@@ -168,7 +168,7 @@ Need more than a scan? Pro adds deeper checks, automatic fixes and client-ready 
 
 | | Free | Pro |
 | :--- | :--- | :--- |
-| Rules | 19 | 48 |
+| Rules | 19 | 51 |
 | Release safety checks | | Yes |
 | Jenkins configuration and plugin lists | | Yes |
 | Automatic fixes | | Yes |
