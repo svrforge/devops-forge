@@ -218,6 +218,85 @@ class Suppression(unittest.TestCase):
         self.assertEqual(rules("// pipeline-doctor:ignore-file\nsh 'chmod 777 x'\n"), [])
 
 
+class ScanCoverage(unittest.TestCase):
+    def run_cli(self, *args):
+        return subprocess.run([sys.executable, str(SCRIPT), *args],
+                              capture_output=True, text=True)
+
+    def test_empty_scan_is_not_assessed_in_every_format(self):
+        with tempfile.TemporaryDirectory() as folder:
+            for format_name in ("text", "markdown", "json", "sarif"):
+                with self.subTest(format=format_name):
+                    result = self.run_cli(folder, "--format", format_name)
+                    self.assertEqual(result.returncode, 2, result.stdout)
+                    self.assertIn("no matching pipeline files", result.stderr.lower())
+                    self.assertNotIn("No problems found", result.stdout)
+                    if format_name in ("text", "markdown"):
+                        self.assertIn("NOT ASSESSED", result.stdout)
+                    elif format_name == "json":
+                        report = json.loads(result.stdout)
+                        self.assertEqual(report["status"], "not_assessed")
+                        self.assertEqual(report["files_scanned"], [])
+                    else:
+                        run = json.loads(result.stdout)["runs"][0]
+                        self.assertFalse(run["invocations"][0]["executionSuccessful"])
+                        self.assertEqual(run["properties"]["status"], "not_assessed")
+                        self.assertEqual(run["results"], [])
+
+    def test_all_excluded_is_not_assessed_and_writes_report(self):
+        with tempfile.TemporaryDirectory() as folder:
+            root = Path(folder)
+            (root / "Jenkinsfile").write_text("sh 'ok'", encoding="utf-8")
+            report = root / "report.md"
+            result = self.run_cli(folder, "--exclude", "*Jenkinsfile",
+                                  "--format", "markdown", "--output", str(report))
+            self.assertEqual(result.returncode, 2)
+            self.assertIn("NOT ASSESSED", report.read_text(encoding="utf-8"))
+
+    def test_unrelated_files_are_not_a_clean_scan(self):
+        with tempfile.TemporaryDirectory() as folder:
+            (Path(folder) / "README.md").write_text("Documentation", encoding="utf-8")
+            self.assertEqual(self.run_cli(folder).returncode, 2)
+
+    def test_fail_on_none_does_not_hide_missing_coverage(self):
+        with tempfile.TemporaryDirectory() as folder:
+            self.assertEqual(self.run_cli(folder, "--fail-on", "none").returncode, 2)
+
+    def test_scanned_clean_file_still_passes_every_format(self):
+        for format_name in ("text", "markdown", "json", "sarif"):
+            with self.subTest(format=format_name):
+                result = self.run_cli(str(FIXTURES / "clean.Jenkinsfile"),
+                                      "--format", format_name, "--fail-on", "low")
+                self.assertEqual(result.returncode, 0, result.stderr)
+                self.assertNotIn("NOT ASSESSED", result.stdout)
+                if format_name == "json":
+                    self.assertEqual(json.loads(result.stdout)["status"], "assessed")
+                elif format_name == "sarif":
+                    run = json.loads(result.stdout)["runs"][0]
+                    self.assertTrue(run["invocations"][0]["executionSuccessful"])
+                    self.assertEqual(run["properties"]["files_scanned"], 1)
+
+    def test_list_rules_needs_no_pipeline_files(self):
+        with tempfile.TemporaryDirectory() as folder:
+            result = self.run_cli(folder, "--list-rules", "--format", "json")
+            self.assertEqual(result.returncode, 0)
+            self.assertEqual(len(json.loads(result.stdout)), len(pd.RULES))
+
+    def test_both_marketplaces_resolve_to_the_audit_skill(self):
+        repo = ROOT.parents[1]
+        for marketplace in (".claude-plugin/marketplace.json", ".agents/plugins/marketplace.json"):
+            data = json.loads((repo / marketplace).read_text(encoding="utf-8"))
+            plugin = next(p for p in data["plugins"] if p["name"] == "pipeline-doctor")
+            source = plugin["source"]
+            plugin_root = repo / (source["path"] if isinstance(source, dict) else source)
+            manifest_dir = ".codex-plugin" if marketplace.startswith(".agents") else ".claude-plugin"
+            manifest = json.loads((plugin_root / manifest_dir / "plugin.json").read_text(encoding="utf-8"))
+            self.assertEqual(manifest["name"], "pipeline-doctor")
+            skills = plugin_root / manifest.get("skills", "./skills/")
+            self.assertTrue((skills / "audit" / "SKILL.md").is_file())
+            self.assertEqual((skills / "audit" / "scripts" / "pipeline_doctor.py").resolve(), SCRIPT)
+
+
 class Cli(unittest.TestCase):
     def run_main(self, *argv):
         return pd.main(list(argv))

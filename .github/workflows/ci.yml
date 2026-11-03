@@ -68,6 +68,25 @@ jobs:
         run: |
           test "$OUTCOME" = failure
           grep -q PD001 report.md
+      - name: Create an empty scan target
+        shell: bash
+        run: mkdir empty-pipeline-target
+      - name: An empty scan fails even with fail-on none
+        id: empty
+        continue-on-error: true
+        uses: ./
+        with:
+          path: empty-pipeline-target
+          fail-on: none
+          format: markdown
+          output: empty-report.md
+      - name: Check the empty scan outcome and report
+        shell: bash
+        env:
+          OUTCOME: ${{ steps.empty.outcome }}
+        run: |
+          test "$OUTCOME" = failure
+          grep -q 'NOT ASSESSED' empty-report.md
 
   published-action:
     runs-on: ubuntu-24.04

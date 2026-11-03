@@ -107,6 +107,13 @@ python3 pipeline_doctor.py . --format json                           # Your own 
 
 The exit code is 1 when a finding is at or above `--fail-on`, so one command can stop an unsafe pipeline from merging.
 
+If no matching pipeline files are scanned, the result is **NOT ASSESSED** and
+the exit code is `2`, including with `--fail-on none`. Check the target path
+and exclusions; an empty scan is not a clean audit. JSON exposes `status`, and
+SARIF includes scan coverage and an unsuccessful invocation for empty scans.
+This empty-scan handling is in the current source; the published `v1.0.0`
+release predates it. Existing release pins will need updating after the next release.
+
 **GitHub Actions**
 
 ```yaml
@@ -155,6 +162,10 @@ codex plugin add pipeline-doctor@devops-forge
 ```
 
 Then ask: *"Audit the Jenkins pipelines in this repository."*
+
+Both integrations load the free `plugins/pipeline-doctor/skills/audit/SKILL.md`
+skill. Pro is distributed separately through a private repository. The free
+scanner suggests fixes; it does not automatically modify your pipelines.
 
 ## Built to be trusted
 

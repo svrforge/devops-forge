@@ -11,7 +11,8 @@ it reads.
     python3 pipeline_doctor.py . --format sarif --output results.sarif
     python3 pipeline_doctor.py --list-rules
 
-Exit codes: 0 no findings at or above --fail-on, 1 findings, 2 usage error.
+Exit codes: 0 assessed with no findings at or above --fail-on, 1 findings,
+2 usage error or no matching pipeline files scanned.
 """
 from __future__ import annotations
 
@@ -34,6 +35,7 @@ SEVERITY_RANK = {name: len(SEVERITIES) - i for i, name in enumerate(SEVERITIES)}
 SARIF_LEVEL = {"critical": "error", "high": "error", "medium": "warning", "low": "note"}
 
 DOCS = "https://www.jenkins.io/doc/book"
+NOT_ASSESSED = "NOT ASSESSED: no matching pipeline files were scanned. Check paths and exclusions."
 
 
 @dataclass(frozen=True)
@@ -844,6 +846,8 @@ def summarise(findings: Sequence[Finding]) -> Dict[str, int]:
 
 
 def render_text(findings: Sequence[Finding], scanned: Sequence[str]) -> str:
+    if not scanned:
+        return NOT_ASSESSED
     out: List[str] = []
     for finding in findings:
         out.append(f"{finding.file}:{finding.line}  {finding.severity.upper()}  {finding.rule}  {finding.title}")
@@ -862,6 +866,8 @@ def escape_cell(value: str) -> str:
 
 
 def render_markdown(findings: Sequence[Finding], scanned: Sequence[str]) -> str:
+    if not scanned:
+        return "# Pipeline audit report\n\n" + NOT_ASSESSED
     totals = summarise(findings)
     out = [
         "# Pipeline audit report", "",
@@ -891,12 +897,22 @@ def render_markdown(findings: Sequence[Finding], scanned: Sequence[str]) -> str:
     return "\n".join(out)
 
 
-def render_sarif(findings: Sequence[Finding]) -> str:
+def render_sarif(findings: Sequence[Finding], scanned: Sequence[str]) -> str:
     used = sorted({f.rule for f in findings})
     document = {
         "$schema": "https://json.schemastore.org/sarif-2.1.0.json",
         "version": "2.1.0",
         "runs": [{
+            "properties": {
+                "status": "assessed" if scanned else "not_assessed",
+                "files_scanned": len(scanned),
+            },
+            "invocations": [{
+                "executionSuccessful": bool(scanned),
+                "toolExecutionNotifications": [] if scanned else [{
+                    "level": "error", "message": {"text": NOT_ASSESSED},
+                }],
+            }],
             "tool": {"driver": {
                 "name": "pipeline-doctor",
                 "version": __version__,
@@ -980,12 +996,13 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
     if args.format == "json":
         report = json.dumps({
             "tool": "pipeline-doctor", "version": __version__, "files_scanned": scanned,
+            "status": "assessed" if scanned else "not_assessed",
             "summary": summarise(findings), "findings": [asdict(f) for f in findings],
         }, indent=2)
     elif args.format == "markdown":
         report = render_markdown(findings, scanned)
     elif args.format == "sarif":
-        report = render_sarif(findings)
+        report = render_sarif(findings, scanned)
     else:
         report = render_text(findings, scanned)
 
@@ -994,6 +1011,9 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
     else:
         print(report)
 
+    if not scanned:
+        print(f"pipeline-doctor: {NOT_ASSESSED}", file=sys.stderr)
+        return 2
     if args.fail_on == "none":
         return 0
     threshold = SEVERITY_RANK[args.fail_on]
