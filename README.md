@@ -13,7 +13,7 @@
 
 **Audit every Jenkins pipeline in seconds. No Jenkins server, no install and nothing leaves your machine.**
 
-[Quick start](#quick-start) &nbsp;·&nbsp; [What it finds](#what-it-finds) &nbsp;·&nbsp; [Use it in CI](#use-it-in-ci) &nbsp;·&nbsp; [Agent skill](#use-it-as-an-agent-skill) &nbsp;·&nbsp; [Professional audit](#professional-audit)
+[Quick start](#quick-start) &nbsp;·&nbsp; [What it finds](#what-it-finds) &nbsp;·&nbsp; [Use it in CI](#use-it-in-ci) &nbsp;·&nbsp; [Agent skill](#use-it-as-an-agent-skill) &nbsp;·&nbsp; [Pro](#pipeline-doctor-pro) &nbsp;·&nbsp; [Professional audit](#professional-audit)
 
 </div>
 
@@ -161,6 +161,22 @@ Then ask: *"Audit the Jenkins pipelines in this repository."*
 - **Tested on real pipelines.** Rules were tuned against 673 public Jenkinsfiles and shared-library files.
 - **Tested in CI.** A unit test suite runs on Linux, macOS and Windows, and this repository's own [Jenkinsfile](Jenkinsfile) must pass its own audit.
 - **Honest about limits.** It is a fast static check for these 19 patterns. It cannot see job, folder or controller settings, so a clean report does not prove that a pipeline is secure.
+
+## Pipeline Doctor Pro
+
+Need more than a scan? Pro adds deeper checks, automatic fixes and client-ready PDF reports. It works from the command line and as a skill for Claude Code and Codex.
+
+| | Free | Pro |
+| :--- | :--- | :--- |
+| Rules | 19 | 48 |
+| Release safety checks | | Yes |
+| Jenkins configuration and plugin lists | | Yes |
+| Automatic fixes | | Yes |
+| Client-ready PDF reports | | Yes |
+
+**[Get Pipeline Doctor Pro for $29](https://buy.polar.sh/polar_cl_ms4jpRHOeIZXsw2d84ThGv5OAoZdyfhFSlsOk1cluxp)**
+
+One-time payment. You need a GitHub account, because Pro is delivered through a private repository.
 
 ## Professional audit
 
