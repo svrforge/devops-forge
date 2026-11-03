@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 1.0.1 - 2026-11-03
 
 - Return exit code `2` and report `NOT ASSESSED` when no matching pipeline files
   are scanned, even with `--fail-on none`.

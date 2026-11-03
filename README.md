@@ -111,14 +111,14 @@ If no matching pipeline files are scanned, the result is **NOT ASSESSED** and
 the exit code is `2`, including with `--fail-on none`. Check the target path
 and exclusions; an empty scan is not a clean audit. JSON exposes `status`, and
 SARIF includes scan coverage and an unsuccessful invocation for empty scans.
-This empty-scan handling is in the current source; the published `v1.0.0`
-release predates it. Existing release pins will need updating after the next release.
+This behaviour is available from `v1.0.1`. Update existing `v1.0.0` pins to
+receive the fix.
 
 **GitHub Actions**
 
 ```yaml
 - uses: actions/checkout@v7
-- uses: svrforge/devops-forge@v1.0.0
+- uses: svrforge/devops-forge@v1.0.1
   with:
     fail-on: high
 ```
